@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Menu Selector App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* Global Styles */
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background-color: #f4f7fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .container {
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      font-family: 'Roboto', sans-serif;
+      font-size: 2rem;
+      text-align: center;
+      color: #007bff;
+      font-style: italic;
+      font-size: 11px;
+    }
+
+    /* Logo */
+    #appLogo {
+      display: block;
+      margin: 0 auto 20px;
+      max-width: 150px;
+      height: auto;
+    }
+
+    /* Menu Sections */
+    .menu-section {
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+    }
+    select, input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    /* Buttons */
+    button {
+      padding: 12px 20px;
+      font-size: 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+    }
+    button:focus {
+      outline: none;
+    }
+    .hidden {
+      display: none;
+    }
+
+    /* Section Title */
+    .section-title {
+      font-family: 'Roboto', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      color: #007bff;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+
+    /* Modal Styling */
+    #confirmationModal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      width: 100%;
+      max-width: 400px;
+      display: none;
+    }
+    #modalOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      display: none;
+    }
+    #modalActions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    #modalActions button {
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: 600;
+    }
+    #modalActions button.cancel {
+      background-color: #dc3545;
+      color: white;
+    }
+    #modalActions button {
+      background-color: #007bff;
+      color: white;
+    }
+    #modalActions button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        margin: 20px;
+        padding: 15px;
+      }
+      select {
+        padding: 8px;
+      }
+      button {
+        width: 100%;
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="https://github.com/gule2020/mm/raw/main/LogoPantoneGold871C%20(1)-1.png" alt="Logo" id="appLogo">
+    <h1>Leopard Rock Menu Selector Tool</h1>
+
+    <div class="menu-section">
+      <label for="menuType">Select Menu Type:</label>
+      <select id="menuType">
+        <option value="">--Select--</option>
+        <option value="3course">3-Course Menu</option>
+        <option value="buffet">Buffet Menu</option>
+        <option value="kiddie">Kiddie Menu</option>
+      </select>
+    </div>
+
+    <div id="menuOptions" class="hidden">
+      <div class="menu-section hidden" id="startersContainer">
+        <h2 class="section-title">Starters</h2>
+      </div>
+      <div class="menu-section hidden" id="mainsContainer">
+        <h2 class="section-title">Mains</h2>
+      </div>
+      <div class="menu-section hidden" id="dessertsContainer">
+        <h2 class="section-title">Desserts</h2>
+      </div>
+      <div class="menu-section hidden" id="buffetContainer">
+        <!-- Removed course names for Buffet -->
+      </div>
+      <div class="menu-section hidden" id="kiddieContainer">
+        <!-- Removed course names for Kiddie -->
+      </div>
+    </div>
+
+    <button id="generateMenu">Generate Menu</button>
+    <button id="downloadPdf" class="hidden">Download as PDF</button>
+
+    <div id="modalOverlay"></div>
+    <div id="confirmationModal">
+      <h3>Confirm Your Selections</h3>
+      <ul id="modalSelections"></ul>
+      <div id="modalActions">
+        <button id="confirmButton">Confirm</button>
+        <button id="cancelButton" class="cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script>
+    // Your JS logic here
+  </script>
+</body>
+</html>
